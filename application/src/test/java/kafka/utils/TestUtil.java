@@ -2,6 +2,7 @@ package kafka.utils;
 
 import com.fabio.springcloudexample.avro.OrdersAvro;
 import com.fabio.springcloudexample.proto.CustomerDetailsProto;
+import com.fabio.springcloudexample.proto.EnabledCustomerProto;
 import com.fabio.springcloudexample.proto.OrdersProto;
 import com.github.javafaker.Faker;
 
@@ -34,6 +35,12 @@ public class TestUtil {
       .setItem(item)
       .setQty(qty)
       .build();
+  }
+
+
+  public static EnabledCustomerProto.EnabledCustomer getCustomerEnabledProto(String customerId ) {
+
+    return EnabledCustomerProto.EnabledCustomer.newBuilder().setCustomerId(customerId).build();
   }
 
 }

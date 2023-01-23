@@ -41,7 +41,7 @@ spring:
   cloud:
     stream:
       function:
-        definition: moveData;processOrdersVipCustomersProto
+        definition: moveData;processProto
       #            moveData;moveDataBackfill
 
       default-binder: kstream
@@ -99,15 +99,15 @@ spring:
           binder: target-kafka
           contentType: application/x-protobuf
 
-        processOrdersVipCustomersProto-in-0:
+        processProto-in-0:
           destination: OrdersInput-proto
           binder: kstream
           contentType: application/x-protobuf
-        processOrdersVipCustomersProto-in-1:
+        processProto-in-1:
           destination: EnabledCustomer-proto
           binder: globalktable
           contentType: application/x-protobuf
-        processOrdersVipCustomersProto-out-0:
+        processProto-out-0:
           destination: OrdersOutput-proto
           binder: kstream
           contentType: application/x-protobuf
@@ -117,7 +117,7 @@ spring:
           binder:
             deserialization-exception-handler: sendtodlq
             functions:
-              processOrdersVipCustomersProto.applicationId: spring-cloud-kafka-streams-stream-globalktable-processOrdersVipCustomersProto
+              processProto.applicationId: spring-cloud-kafka-streams-stream-globalktable-processProto
             configuration:
               state.dir: state-store
               acceptable.recovery.lag: 0

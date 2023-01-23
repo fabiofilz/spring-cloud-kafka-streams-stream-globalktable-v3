@@ -41,7 +41,7 @@ spring:
   cloud:
     stream:
       function:
-        definition: moveData;processOrdersVipCustomersProto;processOrdersVipCustomersAvro
+        definition: processProto;processAvro
 
       default-binder: kstream
 
@@ -78,64 +78,33 @@ spring:
                 schema.registry.url: ${custom-configs.kafka.schema-registry}
                 derive.type: true
 
-        source-kafka:
-          type: kafka
-          environment:
-            spring.cloud.stream.kafka.binder:
-              brokers: ${custom-configs.kafka.broker}
-              configuration:
-                value.deserializer: io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer
-              consumer-properties:
-                schema.registry.url: ${custom-configs.kafka.schema-registry}
-                derive.type: true
-
-        target-kafka:
-          type: kafka
-          environment:
-            spring.cloud.stream.kafka.binder:
-              brokers: ${custom-configs.kafka.broker}
-              configuration:
-                value.serializer: io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer
-              producer-properties:
-                schema.registry.url: ${custom-configs.kafka.schema-registry}
-                derive.type: true
-
       bindings:
-        moveData-in-0:
-          destination: CustomerDetails-proto
-          binder: source-kafka
-          group: spring-cloud-kafka-streams-stream-globalktable-two-binder-proto
-        moveData-out-0:
-          destination: EnabledCustomer-proto
-          binder: target-kafka
-          contentType: application/x-protobuf
-
-        processOrdersVipCustomersProto-in-0:
+        processProto-in-0:
           destination: OrdersInput-proto
           binder: kstream
           contentType: application/x-protobuf
-        processOrdersVipCustomersProto-in-1:
+        processProto-in-1:
           destination: EnabledCustomer-proto
           binder: globalktable
           contentType: application/x-protobuf
-        processOrdersVipCustomersProto-out-0:
+        processProto-out-0:
           destination: OrdersOutput-proto
           binder: kstream
           contentType: application/x-protobuf
 
-        processOrdersVipCustomersAvro-in-0:
+        processAvro-in-0:
           destination: OrdersInput-avro
           binder: kstream-avro
           contentType: application/*+avro
           consumer:
             use-native-decoding: false
-        processOrdersVipCustomersAvro-in-1:
+        processAvro-in-1:
           destination: EnabledCustomer-proto
           binder: globalktable
           contentType: application/x-protobuf
           consumer:
             use-native-decoding: true
-        processOrdersVipCustomersAvro-out-0:
+        processAvro-out-0:
           destination: OrdersOutput-avro
           binder: kstream-avro
           contentType: application/*+avro
@@ -147,8 +116,8 @@ spring:
           binder:
             deserialization-exception-handler: sendtodlq
             functions:
-              processOrdersVipCustomersProto.applicationId: spring-cloud-kafka-streams-stream-globalktable-processOrdersVipCustomersProto
-              processOrdersVipCustomersAvro.applicationId: spring-cloud-kafka-streams-stream-globalktable-processOrdersVipCustomersAvro
+              processProto.applicationId: spring-cloud-kafka-streams-stream-globalktable-processProto
+              processAvro.applicationId: spring-cloud-kafka-streams-stream-globalktable-processAvro
             configuration:
               state.dir: state-store
               acceptable.recovery.lag: 0
