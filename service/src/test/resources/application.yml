@@ -1,0 +1,141 @@
+info:
+  name: '@project.parent.name@'
+  version: '@project.version@'
+
+server:
+  address: 0.0.0.0
+  servlet:
+    context-path: /
+  port: 8080
+
+management:
+  endpoints.web:
+    exposure.include: '*'
+  health:
+    jms:
+      enabled: false
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+    binders:
+      enabled: true
+  server:
+    address: 0.0.0.0
+    port: 8081
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoint:
+    metrics:
+      enable: true
+    prometheus:
+      enable: true
+    health:
+      show-details: always
+      probes:
+        enabled: true
+
+spring:
+  cloud:
+    stream:
+      function:
+        definition: moveData;processOrdersVipCustomersProto
+      #            moveData;moveDataBackfill
+
+      default-binder: kstream
+
+      binders:
+        kstream:
+          type: kstream
+          environment:
+            spring.cloud.stream.kafka.streams.binder:
+              brokers: ${custom-configs.kafka.broker}
+              configuration:
+                default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
+                schema.registry.url: ${custom-configs.kafka.schema-registry}
+                derive.type: true
+
+        globalktable:
+          type: globalktable
+          environment:
+            spring.cloud.stream.kafka.streams.binder:
+              brokers: ${custom-configs.kafka.broker}
+              configuration:
+                default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
+                schema.registry.url: ${custom-configs.kafka.schema-registry}
+                derive.type: true
+
+        source-kafka:
+          type: kafka
+          environment:
+            spring.cloud.stream.kafka.binder:
+              brokers: ${custom-configs.kafka.broker}
+              configuration:
+                value.deserializer: io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer
+              consumer-properties:
+                schema.registry.url: ${custom-configs.kafka.schema-registry}
+                derive.type: true
+
+        target-kafka:
+          type: kafka
+          environment:
+            spring.cloud.stream.kafka.binder:
+              brokers: ${custom-configs.kafka.broker}
+              configuration:
+                value.serializer: io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer
+              producer-properties:
+                schema.registry.url: ${custom-configs.kafka.schema-registry}
+                derive.type: true
+
+      bindings:
+        moveData-in-0:
+          destination: CustomerDetails-proto
+          binder: source-kafka
+          group: spring-cloud-kafka-streams-stream-globalktable-two-binder-proto
+        moveData-out-0:
+          destination: EnabledCustomer-proto
+          binder: target-kafka
+          contentType: application/x-protobuf
+
+        processOrdersVipCustomersProto-in-0:
+          destination: OrdersInput-proto
+          binder: kstream
+          contentType: application/x-protobuf
+        processOrdersVipCustomersProto-in-1:
+          destination: EnabledCustomer-proto
+          binder: globalktable
+          contentType: application/x-protobuf
+        processOrdersVipCustomersProto-out-0:
+          destination: OrdersOutput-proto
+          binder: kstream
+          contentType: application/x-protobuf
+
+      kafka:
+        streams:
+          binder:
+            deserialization-exception-handler: sendtodlq
+            functions:
+              processOrdersVipCustomersProto.applicationId: spring-cloud-kafka-streams-stream-globalktable-processOrdersVipCustomersProto
+            configuration:
+              state.dir: state-store
+              acceptable.recovery.lag: 0
+
+        binder:
+          configuration:
+            heartbeat.interval.ms: 10000
+            max.poll.records: 5000
+      output:
+        producer:
+          useNativeEncoding: true
+
+logging.level:
+  root: info
+debug: false
+
+custom-configs:
+  kafka:
+    broker: localhost:9092
+    schema-registry: http://localhost:8081
+    test: fabio

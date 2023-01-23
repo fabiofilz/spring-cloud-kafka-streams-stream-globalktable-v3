@@ -1,0 +1,11 @@
+<configuration>
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%t{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} host=%server client=%clientHost url="%requestURL" requestId=%responseHeader{X-Request-ID} status=%statusCode bytes=%bytesSent duration=%elapsedTime</pattern>
+        </encoder>
+    </appender>
+
+    <appender-ref ref="STDOUT" />
+</configuration>

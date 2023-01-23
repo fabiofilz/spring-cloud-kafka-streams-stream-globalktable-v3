@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration debug="true" scan="true">
+
+    <conversionRule conversionWord="stack"
+                    converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <version/>
+                <loggerName/>
+                <threadName/>
+                <logLevel/>
+                <mdc/>
+                <pattern>
+                    <pattern>
+                        {
+                        "message": "%date{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %level %logger{1} [thread=%thread] [%mdc] - %message%n%stack{20,full,10000}",
+                        "sourcetype": "spring-boot-application"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <logger name="com.fabio" additivity="false" level="INFO">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

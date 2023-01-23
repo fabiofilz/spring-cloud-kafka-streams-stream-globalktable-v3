@@ -1,0 +1,82 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.fabio.springcloudexample</groupId>
+    <artifactId>spring-cloud-kafka-streams-stream-globalktable</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>spring-cloud-kafka-streams-stream-globalktable</name>
+    <url>https://github.com/fabiofilz</url>
+
+    <modules>
+        <module>message</module>
+        <module>service</module>
+        <module>deployment</module>
+        <module>application</module>
+    </modules>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.5</version>
+    </parent>
+
+    <distributionManagement>
+        <repository>
+            <id>m2-internal-official</id>
+            <name>m2-internal-official</name>
+            <url>${releases.repository.url}</url>
+            <layout>default</layout>
+        </repository>
+        <snapshotRepository>
+            <id>m2-internal-devel</id>
+            <name>m2-internal-devel</name>
+            <url>${snapshots.repository.url}</url>
+            <layout>default</layout>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <prerequisites>
+        <maven>3.5.0</maven>
+    </prerequisites>
+
+    <properties>
+        <java.version>17</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <confluent.version>7.2.1</confluent.version>
+        <kafka-stream.version>3.1.0</kafka-stream.version>
+        <spring-cloud.version>2021.0.4</spring-cloud.version>
+        <awaitility.version>4.1.0</awaitility.version>
+        <javafaker.version>1.0.2</javafaker.version>
+        <jacoco.line.coveredRatio>00%</jacoco.line.coveredRatio>
+
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M5</version>
+                <configuration>
+                    <testFailureIgnore>false</testFailureIgnore>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,22 @@
+<!-- This file specifies a spotbugs filter for excluding reports that
+     should not be considered errors.
+     The format of this file is documented at:
+       https://spotbugs.readthedocs.io/en/latest/filter.html
+     When possible, please specify the full names of the bug codes,
+     using the pattern attribute, to make it clearer what reports are
+     being suppressed.  You can find a listing of codes at:
+       https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html
+  -->
+
+<FindBugsFilter>
+    <!-- Ignore non-null field is not initialized since we mix @Autowired and constructor initialization ?1-->
+    <!--<Match>
+        <Bug pattern="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
+        <Class name="com.fabio.springcloudexample.monitoring.metrics.kafka.KafkaProducerMetrics"/>
+    </Match>-->
+
+    <!-- Ignore returning references to internal representations of objects -->
+<!--    <Match>-->
+<!--        <Package name="com.fabio.springcloudexample.avro"/>-->
+<!--    </Match>-->
+</FindBugsFilter>

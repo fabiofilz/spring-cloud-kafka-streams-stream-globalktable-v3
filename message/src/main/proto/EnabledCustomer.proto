@@ -1,0 +1,9 @@
+syntax = "proto3";
+package com.fabio.springcloudexample;
+
+option java_package = "com.fabio.springcloudexample.proto";
+option java_outer_classname = "EnabledCustomerProto";
+
+message EnabledCustomer {
+  string customerId = 1;
+}

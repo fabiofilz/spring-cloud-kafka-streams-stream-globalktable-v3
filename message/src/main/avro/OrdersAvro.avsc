@@ -1,0 +1,19 @@
+{
+  "type": "record",
+  "name": "OrdersAvro",
+  "namespace": "com.fabio.springcloudexample.avro",
+  "fields": [
+    {
+      "name": "customerId",
+      "type": "string"
+    },
+    {
+      "name": "qty",
+      "type": "int"
+    },
+    {
+      "name": "item",
+      "type": "string"
+    }
+  ]
+}

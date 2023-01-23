@@ -1,0 +1,35 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+state-store
+
+
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*/target/
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+.idea/
+*.tgz
+
+.DS_Store
+*/.settings/
+*/.classpath
+*/.factorypath
+*/.project
+.project
+.settings
+
+/Dockerfile
+
+message/src/main/java/com/fabio/springcloudexample/avro/*
