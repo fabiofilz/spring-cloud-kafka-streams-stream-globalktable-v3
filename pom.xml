@@ -12,8 +12,6 @@
 
     <modules>
         <module>message</module>
-        <module>service</module>
-        <module>deployment</module>
         <module>application</module>
     </modules>
 

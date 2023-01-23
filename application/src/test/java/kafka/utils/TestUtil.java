@@ -1,4 +1,4 @@
-package com.fabio.springcloudexample.kafka.utils;
+package kafka.utils;
 
 import com.fabio.springcloudexample.avro.OrdersAvro;
 import com.fabio.springcloudexample.proto.CustomerDetailsProto;

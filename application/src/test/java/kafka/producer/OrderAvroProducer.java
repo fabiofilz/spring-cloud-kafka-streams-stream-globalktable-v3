@@ -1,4 +1,4 @@
-package com.fabio.springcloudexample.kafka.producer;
+package kafka.producer;
 
 import com.fabio.springcloudexample.avro.OrdersAvro;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
@@ -9,7 +9,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.Properties;
 
-import static com.fabio.springcloudexample.kafka.utils.TestUtil.getOrderAvro;
+import static kafka.utils.TestUtil.getOrderAvro;
 
 public class OrderAvroProducer {
 

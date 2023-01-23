@@ -1,18 +1,18 @@
-package com.fabio.springcloudexample.kafka.producer;
+package kafka.producer;
 
-import com.fabio.springcloudexample.proto.CustomerDetailsProto;
+import com.fabio.springcloudexample.proto.OrdersProto;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.Properties;
 
-import static com.fabio.springcloudexample.kafka.utils.TestUtil.getCustomerProto;
+import static kafka.utils.TestUtil.getOrderProto;
 
-public class CustomerProtoProducer {
+public class OrderProtoProducer {
 
   public static void main(String[] args) throws Exception{
-    String topicName = "CustomerDetails-proto";
+    String topicName = "OrdersInput-proto";
     Properties props = new Properties();
     props.put("bootstrap.servers", "localhost:9092");
     props.put("clientid", "spring-cloud-kafka-streams-stream-globalktable-protobuf");
@@ -22,13 +22,13 @@ public class CustomerProtoProducer {
     props.put("auto.register.schemas", "true");
 
     String customerId = "123456";
-    String customerName = "Fabio";
-    Boolean enabled = true;
-    CustomerDetailsProto.CustomerDetails event = getCustomerProto(customerId, customerName, enabled);
+    String item = "box";
+    Integer qty = 1;
+    OrdersProto.Orders event = getOrderProto(customerId, item, qty);
 
-    Producer<String, CustomerDetailsProto.CustomerDetails > producer = new KafkaProducer<>(props);
+    Producer<String, OrdersProto.Orders  > producer = new KafkaProducer<>(props);
     producer.send(new ProducerRecord<>(topicName, customerId, event)).get();
-    System.out.println("Sent customer to Kafka: " + event);
+    System.out.println("Sent Order proto to Kafka: " + event);
     producer.flush();
     producer.close();
   }
