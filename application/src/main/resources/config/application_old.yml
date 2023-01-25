@@ -1,0 +1,140 @@
+info:
+  name: '@project.parent.name@'
+  version: '@project.version@'
+
+server:
+  address: 0.0.0.0
+  servlet:
+    context-path: /
+  port: 6060
+
+management:
+  endpoints.web:
+    exposure.include: '*'
+  health:
+    jms:
+      enabled: false
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+    binders:
+      enabled: true
+  server:
+    address: 0.0.0.0
+    port: 6061
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoint:
+    metrics:
+      enable: true
+    prometheus:
+      enable: true
+    health:
+      show-details: always
+      probes:
+        enabled: true
+
+spring:
+  cloud:
+    stream:
+      function:
+        definition: processProto;processAvro
+
+      default-binder: kstream
+
+      binders:
+        kstream-avro:
+          type: kstream
+          environment:
+            spring.cloud.stream.kafka.streams.binder:
+              brokers: localhost:9092
+              configuration:
+                specific.avro.reader: true
+                default.key.serde: io.confluent.kafka.streams.serdes.avro.PrimitiveAvroSerde
+                default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+                schema.registry.url: http://localhost:8081
+                useNativeDecoding: false
+
+        kstream:
+          type: kstream
+          environment:
+            spring.cloud.stream.kafka.streams.binder:
+              brokers: ${custom-configs.kafka.broker}
+              configuration:
+                default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
+                schema.registry.url: ${custom-configs.kafka.schema-registry}
+                derive.type: true
+
+        globalktable:
+          type: globalktable
+          environment:
+            spring.cloud.stream.kafka.streams.binder:
+              brokers: ${custom-configs.kafka.broker}
+              configuration:
+                default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
+                schema.registry.url: ${custom-configs.kafka.schema-registry}
+                derive.type: true
+
+      bindings:
+        processProto-in-0:
+          destination: OrdersInput-proto
+          binder: kstream
+          contentType: application/x-protobuf
+        processProto-in-1:
+          destination: EnabledCustomer-proto
+          binder: globalktable
+          contentType: application/x-protobuf
+        processProto-out-0:
+          destination: OrdersOutput-proto
+          binder: kstream
+          contentType: application/x-protobuf
+
+        processAvro-in-0:
+          destination: OrdersInput-avro
+          binder: kstream-avro
+          contentType: application/*+avro
+          consumer:
+            use-native-decoding: false
+        processAvro-in-1:
+          destination: EnabledCustomer-proto
+          binder: globalktable
+          contentType: application/x-protobuf
+          consumer:
+            use-native-decoding: true
+        processAvro-out-0:
+          destination: OrdersOutput-avro
+          binder: kstream-avro
+          contentType: application/*+avro
+          producer:
+            use-native-encoding: false
+
+      kafka:
+        streams:
+          binder:
+            deserialization-exception-handler: sendtodlq
+            functions:
+              processProto.applicationId: spring-cloud-kafka-streams-stream-globalktable-processProto
+              processAvro.applicationId: spring-cloud-kafka-streams-stream-globalktable-processAvro
+            configuration:
+              state.dir: state-store
+              acceptable.recovery.lag: 0
+
+        binder:
+          configuration:
+            heartbeat.interval.ms: 10000
+            max.poll.records: 5000
+      output:
+        producer:
+          useNativeEncoding: true
+
+custom-configs:
+  kafka:
+    broker: localhost:9092
+    schema-registry: http://localhost:8081
+
+logging.level:
+  root: info
+debug: false

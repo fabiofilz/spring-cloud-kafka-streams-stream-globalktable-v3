@@ -356,6 +356,14 @@
 
   </dependencies>
 
+  <repositories>
+    <repository>
+      <id>io.confluent</id>
+      <url>https://packages.confluent.io/maven/</url>
+    </repository>
+  </repositories>
+
+
   <build>
     <plugins>
       <plugin>

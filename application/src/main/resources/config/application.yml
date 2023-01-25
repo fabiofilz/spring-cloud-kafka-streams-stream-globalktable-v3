@@ -37,80 +37,25 @@ management:
       probes:
         enabled: true
 
+
 spring:
   cloud:
     stream:
       function:
         definition: processProto;processAvro
-
-      default-binder: kstream
-
-      binders:
-        kstream-avro:
-          type: kstream
-          environment:
-            spring.cloud.stream.kafka.streams.binder:
-              brokers: localhost:9092
-              configuration:
-                specific.avro.reader: true
-                default.key.serde: io.confluent.kafka.streams.serdes.avro.PrimitiveAvroSerde
-                default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
-                schema.registry.url: http://localhost:8081
-                useNativeDecoding: false
-
-        kstream:
-          type: kstream
-          environment:
-            spring.cloud.stream.kafka.streams.binder:
-              brokers: ${custom-configs.kafka.broker}
-              configuration:
-                default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
-                schema.registry.url: ${custom-configs.kafka.schema-registry}
-                derive.type: true
-
-        globalktable:
-          type: globalktable
-          environment:
-            spring.cloud.stream.kafka.streams.binder:
-              brokers: ${custom-configs.kafka.broker}
-              configuration:
-                default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
-                schema.registry.url: ${custom-configs.kafka.schema-registry}
-                derive.type: true
-
       bindings:
         processProto-in-0:
           destination: OrdersInput-proto
-          binder: kstream
-          contentType: application/x-protobuf
         processProto-in-1:
           destination: EnabledCustomer-proto
-          binder: globalktable
-          contentType: application/x-protobuf
         processProto-out-0:
           destination: OrdersOutput-proto
-          binder: kstream
-          contentType: application/x-protobuf
-
         processAvro-in-0:
           destination: OrdersInput-avro
-          binder: kstream-avro
-          contentType: application/*+avro
-          consumer:
-            use-native-decoding: false
         processAvro-in-1:
           destination: EnabledCustomer-proto
-          binder: globalktable
-          contentType: application/x-protobuf
-          consumer:
-            use-native-decoding: true
         processAvro-out-0:
           destination: OrdersOutput-avro
-          binder: kstream-avro
-          contentType: application/*+avro
-          producer:
-            use-native-encoding: false
-
       kafka:
         streams:
           binder:
@@ -121,20 +66,45 @@ spring:
             configuration:
               state.dir: state-store
               acceptable.recovery.lag: 0
-
+              schema.registry.url: http://localhost:8081
+          bindings:
+            processProto-in-0:
+              consumer:
+                configuration:
+                  default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
+                  derive.type: true
+            processProto-in-1:
+              consumer:
+                configuration:
+                  default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
+                  derive.type: true
+            processProto-out-0:
+              consumer:
+                configuration:
+                  default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
+                  derive.type: true
+            processAvro-in-0:
+              consumer:
+                configuration:
+                  specific.avro.reader: true
+                  default.key.serde: io.confluent.kafka.streams.serdes.avro.PrimitiveAvroSerde
+                  default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+            processAvro-in-1:
+              consumer:
+                configuration:
+                  default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
+                  derive.type: true
+            processAvro-out-0:
+              consumer:
+                configuration:
+                  specific.avro.reader: true
+                  default.key.serde: io.confluent.kafka.streams.serdes.avro.PrimitiveAvroSerde
+                  default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
         binder:
           configuration:
             heartbeat.interval.ms: 10000
             max.poll.records: 5000
-      output:
-        producer:
-          useNativeEncoding: true
-
-custom-configs:
-  kafka:
-    broker: localhost:9092
-    schema-registry: http://localhost:8081
 
 logging.level:
   root: info
-debug: false
+  debug: false
