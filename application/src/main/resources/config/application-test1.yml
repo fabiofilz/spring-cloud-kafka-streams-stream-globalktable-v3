@@ -42,7 +42,7 @@ spring:
   cloud:
     stream:
       function:
-        definition: processAvro
+        definition: processProto;processAvro
       bindings:
         processProto-in-0:
           destination: OrdersInput-proto
@@ -70,34 +70,36 @@ spring:
           bindings:
             processProto-in-0:
               consumer:
-                value-serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
                 configuration:
+                  default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
                   derive.type: true
             processProto-in-1:
               consumer:
-                value-serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
                 configuration:
+                  default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
                   derive.type: true
             processProto-out-0:
               consumer:
-                value-serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
                 configuration:
+                  default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
                   derive.type: true
             processAvro-in-0:
               consumer:
-                value-serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
                 configuration:
                   specific.avro.reader: true
+                  default.key.serde: io.confluent.kafka.streams.serdes.avro.PrimitiveAvroSerde
+                  default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
             processAvro-in-1:
               consumer:
-                value-serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
                 configuration:
+                  default.value.serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
                   derive.type: true
             processAvro-out-0:
               consumer:
-                value-serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
                 configuration:
                   specific.avro.reader: true
+                  default.key.serde: io.confluent.kafka.streams.serdes.avro.PrimitiveAvroSerde
+                  default.value.serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
         binder:
           configuration:
             heartbeat.interval.ms: 10000
