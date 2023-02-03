@@ -42,7 +42,7 @@ spring:
   cloud:
     stream:
       function:
-        definition: processAvro
+        definition: processAvro;processProto
       bindings:
         processProto-in-0:
           destination: OrdersInput-proto
@@ -79,7 +79,7 @@ spring:
                 configuration:
                   derive.type: true
             processProto-out-0:
-              consumer:
+              producer:
                 value-serde: io.confluent.kafka.streams.serdes.protobuf.KafkaProtobufSerde
                 configuration:
                   derive.type: true
@@ -94,7 +94,7 @@ spring:
                 configuration:
                   derive.type: true
             processAvro-out-0:
-              consumer:
+              producer:
                 value-serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
                 configuration:
                   specific.avro.reader: true
