@@ -37,78 +37,46 @@ management:
       probes:
         enabled: true
 
-
 spring:
   cloud:
     stream:
-#      default-binder: kafkaSource
       function:
-        definition: processAvro;processProto;sendData
+        definition: processAvro;processProto;moveData
       bindings:
         processProto-in-0:
           destination: OrdersInput-proto
-          binder: kafkaKstream
         processProto-in-1:
           destination: EnabledCustomer-proto
-          binder: kafkaKstream
         processProto-out-0:
           destination: OrdersOutput-proto
-          binder: kafkaKstream
         processAvro-in-0:
           destination: OrdersInput-avro
-          binder: kafkaKstream
         processAvro-in-1:
           destination: EnabledCustomer-proto
-          binder: kafkaKstream
         processAvro-out-0:
           destination: OrdersOutput-avro
-          binder: kafkaKstream
-        sendData-in-0:
+        moveData-in-0:
+          destination: CustomerDetails-proto
+        moveData-out-0:
           destination: EnabledCustomer-proto
-          binder: kafkaSource
-        sendData-out-0:
-          destination: EnabledCustomer-proto-out
-          binder: kafkaDestination
-      binders:
-        kafkaSource:
-          type: kafka
-          environment:
-            spring:
-              cloud:
-                stream:
-                  kafka:
-                    binder:
-                      brokers: localhost:9092
-                      zkNodes: http://localhost:8081
-        kafkaDestination:
-          type: kafka
-          environment:
-            spring:
-              cloud:
-                stream:
-                  kafka:
-                    binder:
-                      brokers: localhost:9092
-                      zkNodes: http://localhost:8081
-        kafkaKstream:
-          type: kstream
-          environment:
-            spring:
-              cloud:
-                stream:
-                  kafka:
-                    stream:
-                      binder:
-                        brokers: localhost:9092
-                        schema.registry.url: http://localhost:8081
       kafka:
+        bindings:
+          moveData-in-0:
+            consumer:
+              value-serde: io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer
+              configuration:
+                derive.type: true
+          moveData-out-0:
+            consumer:
+              value-serde: io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer
+              configuration:
+                derive.type: true
         streams:
           binder:
             deserialization-exception-handler: sendtodlq
             functions:
               processProto.applicationId: spring-cloud-kafka-streams-stream-globalktable-processProto
               processAvro.applicationId: spring-cloud-kafka-streams-stream-globalktable-processAvro
-#            brokers: localhost:9092
             configuration:
               state.dir: state-store
               acceptable.recovery.lag: 0

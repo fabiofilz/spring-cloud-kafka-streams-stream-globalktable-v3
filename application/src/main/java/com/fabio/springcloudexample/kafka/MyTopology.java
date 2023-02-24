@@ -9,9 +9,14 @@ import org.apache.kafka.streams.kstream.GlobalKTable;
 import org.apache.kafka.streams.kstream.KStream;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @Slf4j
 @Configuration
@@ -73,8 +78,39 @@ public class MyTopology {
         )
         .filter((key, value) -> Optional.ofNullable(value).isPresent())
         .peek((key, value) -> log.info("The order from customerId={} will go to the output", key))
-
     );
   }
+
+
+  /**
+   * Moves Stream EnabledCustomerProto from Source Kafka cluster to another Kafka Broker.
+   *
+   * Function's input and output are bound to different kafka clusters in the
+   * config file.
+   *
+   * @return      Function for Spring Cloud Stream to use to sendData data.
+
+   */
+  @Bean
+  public Function<Message<EnabledCustomerProto.EnabledCustomer>, Message<EnabledCustomerProto.EnabledCustomer>> sendData() {
+    return customerUpdated -> {
+
+      String key = Optional.ofNullable(customerUpdated.getHeaders())
+        .map(v -> v.get(KafkaHeaders.RECEIVED_MESSAGE_KEY))
+        .map(v -> (byte[]) v)
+        .map(String::new)
+        .get();
+
+      return MessageBuilder
+        .withPayload(customerUpdated.getPayload())
+        .setHeader(KafkaHeaders.MESSAGE_KEY, key.getBytes(StandardCharsets.UTF_8))
+        .setHeader(KafkaHeaders.TIMESTAMP, customerUpdated.getHeaders().get(KafkaHeaders.RECEIVED_TIMESTAMP))
+        .setHeader(KafkaHeaders.TIMESTAMP_TYPE, customerUpdated.getHeaders().get(KafkaHeaders.ORIGINAL_TIMESTAMP_TYPE))
+        .build();
+    };
+  }
+
+
+
 
 }
