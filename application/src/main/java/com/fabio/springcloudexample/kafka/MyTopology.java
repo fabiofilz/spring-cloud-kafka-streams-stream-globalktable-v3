@@ -81,7 +81,6 @@ public class MyTopology {
     );
   }
 
-
   /**
    * Moves Stream EnabledCustomerProto from Source Kafka cluster to another Kafka Broker.
    *
@@ -92,25 +91,21 @@ public class MyTopology {
 
    */
   @Bean
-  public Function<Message<EnabledCustomerProto.EnabledCustomer>, Message<EnabledCustomerProto.EnabledCustomer>> sendData() {
-    return customerUpdated -> {
+  public Function<Message<?>, Message<?>> sendData() {
+    return event -> {
 
-      String key = Optional.ofNullable(customerUpdated.getHeaders())
+      String key = Optional.ofNullable(event.getHeaders())
         .map(v -> v.get(KafkaHeaders.RECEIVED_MESSAGE_KEY))
         .map(v -> (byte[]) v)
         .map(String::new)
         .get();
 
       return MessageBuilder
-        .withPayload(customerUpdated.getPayload())
+        .withPayload(event.getPayload())
         .setHeader(KafkaHeaders.MESSAGE_KEY, key.getBytes(StandardCharsets.UTF_8))
-        .setHeader(KafkaHeaders.TIMESTAMP, customerUpdated.getHeaders().get(KafkaHeaders.RECEIVED_TIMESTAMP))
-        .setHeader(KafkaHeaders.TIMESTAMP_TYPE, customerUpdated.getHeaders().get(KafkaHeaders.ORIGINAL_TIMESTAMP_TYPE))
+        .setHeader(KafkaHeaders.TIMESTAMP, event.getHeaders().get(KafkaHeaders.RECEIVED_TIMESTAMP))
+        .setHeader(KafkaHeaders.TIMESTAMP_TYPE, event.getHeaders().get(KafkaHeaders.ORIGINAL_TIMESTAMP_TYPE))
         .build();
     };
   }
-
-
-
-
 }

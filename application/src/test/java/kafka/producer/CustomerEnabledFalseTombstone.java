@@ -5,7 +5,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.Properties;
 
-public class TombstoneProducer {
+public class CustomerEnabledFalseTombstone {
     public static void main(String[] args) {
         String servers = "localhost:9092";
         String topic = "EnabledCustomer-proto";

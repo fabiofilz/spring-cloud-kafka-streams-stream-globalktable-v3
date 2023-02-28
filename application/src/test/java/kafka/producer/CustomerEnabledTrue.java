@@ -9,7 +9,7 @@ import java.util.Properties;
 
 import static kafka.utils.TestUtil.getCustomerEnabledProto;
 
-public class CustomerEnabled {
+public class CustomerEnabledTrue {
 
   public static void main(String[] args) throws Exception{
     String topicName = "EnabledCustomer-proto";
